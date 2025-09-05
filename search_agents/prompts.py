@@ -186,8 +186,8 @@ def format_query(query: str, query_template: str | None = None) -> str:
         return QUERY_TEMPLATE_NO_GET_DOCUMENT_NO_CITATION.format(Question=query)
     elif query_template == "PLAN_SUBQUERY_PROMPT":
         return PLAN_SUBQUERY_PROMPT.format(Question = query)
-    # elif query_template == "WEBSAILOR_USER_PROMPT_SEARCH_ONLY":
-    #     return WEBSAILOR_USER_PROMPT_SEARCH_ONLY.format(Question = query)
+    elif query_template == "WEBSAILOR_USER_PROMPT_SEARCH_ONLY":
+        return WEBSAILOR_USER_PROMPT_SEARCH_ONLY.format(Question = query)
     else:
         raise ValueError(f"Unknown query template: {query_template}")
 
