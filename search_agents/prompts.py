@@ -75,6 +75,62 @@ As you proceed, adhere to the following principles:
 
 3. **Attention to Detail**: You will carefully analyze each information source to ensure that all data is current, relevant, and from credible origins.'''
 
+
+# ============================= 如果要拆解问题，模板在介里 ====================
+PLAN_SUBQUERY_PROMPT = '''
+You are a reasoning planner. Your task is to decompose a multi-hop question into a sequence of dependent sub-questions.
+For each sub-question, you should:
+1. Identify any variables that need to be filled from previous sub-questions' answers
+2. Specify the dependency relationship between sub-questions
+3. Use consistent variable names in square brackets (e.g. [birthplace]) to show dependencies
+
+[question]: {Question}
+
+Your response should be in the following format:
+{{
+    "subqueries": [
+        {{
+            "id": "q1",
+            "query": "First sub-question without dependencies",
+            "depends_on": [],
+            "variables": []
+        }},
+        {{
+            "id": "q2",
+            "query": "Second sub-question that may contain [variable_from_q1]",
+            "depends_on": ["q1"],
+            "variables": [
+                {{
+                    "name": "variable_from_q1",
+                    "source_query": "q1"
+                }}
+            ]
+        }},
+        ...
+    ]
+}}
+Only output valid JSON. Do not add any explanation or markdown code block markers."""
+'''
+
+# ======================= LLM的检索路由提示词模板 ==========================
+ROUTE_QUERY_WITH_LLMS= '''
+You are a routing assistant. Your task is to decide whether a query should be answered using LOCAL knowledge or GLOBAL knowledge.
+LOCAL PROFILE:
+{local_profile}
+
+GLOBAL PROFILE:
+{global_profile}
+
+QUERY:
+{query}
+
+{fail_history}
+
+Please output only one word: \"local\" or \"global\" based on which profile is more relevant to the query.
+Do not add any explanation or extra words."""
+'''
+
+
 # WEBSAILOR_USER_PROMPT_SEARCH_ONLY = """A conversation between User and Assistant. The user asks a question, and the assistant solves it by calling one or more of the following tools.
 # <tools>
 # {
@@ -128,6 +184,8 @@ def format_query(query: str, query_template: str | None = None) -> str:
         return QUERY_TEMPLATE_NO_GET_DOCUMENT.format(Question=query)
     elif query_template == "QUERY_TEMPLATE_NO_GET_DOCUMENT_NO_CITATION":
         return QUERY_TEMPLATE_NO_GET_DOCUMENT_NO_CITATION.format(Question=query)
+    elif query_template == "PLAN_SUBQUERY_PROMPT":
+        return PLAN_SUBQUERY_PROMPT.format(Question = query)
     # elif query_template == "WEBSAILOR_USER_PROMPT_SEARCH_ONLY":
     #     return WEBSAILOR_USER_PROMPT_SEARCH_ONLY.format(Question = query)
     else:
@@ -136,5 +194,5 @@ def format_query(query: str, query_template: str | None = None) -> str:
 if __name__ == "__main__":
     query = "What is the capital of Frace?"
 
-    formatted_query = format_query(query, "QUERY_TEMPLATE_NO_GET_DOCUMENT_NO_CITATION")
+    formatted_query = format_query(query, "PLAN_SUBQUERY_PROMPT")
     print(formatted_query)    
