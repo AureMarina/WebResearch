@@ -24,12 +24,22 @@ class BaseSearcher(ABC):
             k: Number of results to return
         
         Returns: 
-            List of search results with format: {"docid": str, "score": float, "snippet": str}
+            List of search results with format: 
+            [
+            {"docid": str, "text": str, "score": float}, ...
+            ]
         """
         pass
 
+    def get_document(self, docid: str):
+        """
+        可选: 按docid取全文, 返回 {}
+        """
+        return None
+
     @property
-    @abstractmethod
     def search_type(self):
         """Return the type of search (e.g., 'BM25', 'FAISS')"""
-        pass
+        return self.__class__.__name__
+    
+    
