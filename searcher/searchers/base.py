@@ -42,4 +42,15 @@ class BaseSearcher(ABC):
         """Return the type of search (e.g., 'BM25', 'FAISS')"""
         return self.__class__.__name__
     
+    def search_description(self, k: int = 10):
+        """
+        Description of the search tool to be passed to the LLM.
+        """
+        return f"Perform a search on a knowledge source. Returns top-{k} hits with docid, score, and snippet. The snippet contains the document's contents (may be truncated based on token limits)."
+    
+    def get_document_description(self):
+        """
+        Description of the get_document tool to be passed to the LLM.
+        """
+        return "Retrieve a full document by its docid."
     
